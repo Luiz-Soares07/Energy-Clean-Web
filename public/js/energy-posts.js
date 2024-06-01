@@ -27,11 +27,25 @@ document.addEventListener("DOMContentLoaded", function () {
       // Renderiza o HTML retornado pela rota na página
       document.documentElement.innerHTML = html;
 
-      const userName = "<%= userName %>"
-      const contentElement = document.getElementById("content")
-      const tittle = document.createElement("h3")
-      tittle.textContent = `Olá ${userName}, seja muito bem Vindo!`
-      contentElement.appendChild(tittle)
+      const newPost = document.getElementById("new-post")
+      const cancel = document.getElementById("cancel")
+      const form = document.getElementById("send")
+      const tittle = document.getElementById("tittle").value
+      const content = document.getElementById("content").value
+      const overlay = document.getElementById("overlay")
+      const modal = document.getElementById("content-post")
+
+      newPost.addEventListener("click", ()=>{
+        modal.style.display = "block"
+        overlay.style.display = "block"
+      })
+
+      cancel.addEventListener("click", ()=>{
+        modal.style.display = "none"
+        overlay.style.display = "none"
+      })
+
+
     })
     .catch(error => {
       console.error("Erro ao acessar a rota protegida: ", error);

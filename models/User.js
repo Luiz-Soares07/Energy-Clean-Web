@@ -42,7 +42,7 @@ const { isAscii } = require("buffer");
             }
         }
     });
-
+    
 
     // User.sync({force:true})
 

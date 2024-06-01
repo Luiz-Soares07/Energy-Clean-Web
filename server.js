@@ -1,6 +1,7 @@
 require("dotenv").config({ path: "./config.env" })
 const express = require("express")
 const app = express()
+const fs = require("fs")
 const port = 3030
 const bcrypt = require("bcrypt")
 const path = require("path")
@@ -117,7 +118,23 @@ app.post("/login", async (req, res) => {
 app.get("/energy-clean", authMiddleware, (req, res) => {
     const userName = req.user.userName
     const email = req.user.email
-    res.sendFile(path.join(__dirname, "public", "views", "energy-posts.html"))
+
+
+    fs.readFile(path.join(__dirname, "public", "views", "energy-posts.html"),"utf-8", (err, data) =>{
+        if(err){
+            console.log("Erro ao abrir arquivo HTML: ",err)
+            res.status(500).send("Erro interno do servidor")
+
+            return
+        } 
+        const htmlWithUserName = data.replace("<%= userName %>", userName)
+
+
+        res.status(200).send(htmlWithUserName)
+    })
+    
+    
+    // res.sendFile(path.join(__dirname, "public", "views", "energy-posts.html"))
     // res.status(200).json({ message: `Bem-vindo, ${req.user.userName}! Esta é uma rota protegida.` });
 });
 
