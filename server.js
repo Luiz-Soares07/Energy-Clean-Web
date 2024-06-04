@@ -3,9 +3,11 @@ const express = require("express")
 const app = express()
 const fs = require("fs")
 const port = 3030
+const handlebars = require("express-handlebars")
 const bcrypt = require("bcrypt")
 const path = require("path")
 const User = require("./models/User")
+const Post = require("./models/Post")
 const jwt = require("jsonwebtoken")
 const bodyParser = require("body-parser")
 const authMiddleware = require("./middlewares/authMiddleware")
@@ -23,21 +25,20 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(coockieParser())
 
-// app.use((req,res,next) => {
-//     console.log("Headers:", req.headers)
-// })
+app.engine('handlebars', handlebars.engine({defaultLayout: 'main',
+            runtimeOptions: {
+                allowProtoPropertiesByDefault: true,
+                allowProtoMethodsByDefault: true
+            }}
+        ))
+        app.set("view engine", __dirname + "public" + "views")
+
+        app.set("views", path.join(__dirname, "public", "views"));
+
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "home.html"))
 })
-
-function verifyJWT(req, res) {
-    const token = req.headers["authorization"]
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(401).end()
-    })
-
-}
 
 
 app.get("/sign-up", (req, res) => {
@@ -101,7 +102,6 @@ app.post("/login", async (req, res) => {
 
             res.cookie("token", token, { httpOnly: true, secure: true })
             //Retorna para o usuario o token
-            console.log("Funciona disgraça: ", token)
             return res.status(200).send({ message: "login bem-sucedido! ", token })
 
         } else {
@@ -115,28 +115,47 @@ app.post("/login", async (req, res) => {
     }
 })
 
-app.get("/energy-clean", authMiddleware, (req, res) => {
+
+app.get("/energy-clean", authMiddleware, async(req, res) => {
     const userName = req.user.userName
-    const email = req.user.email
 
+    try{
 
-    fs.readFile(path.join(__dirname, "public", "views", "energy-posts.html"),"utf-8", (err, data) =>{
-        if(err){
-            console.log("Erro ao abrir arquivo HTML: ",err)
-            res.status(500).send("Erro interno do servidor")
-
-            return
-        } 
-        const htmlWithUserName = data.replace("<%= userName %>", userName)
-
-
-        res.status(200).send(htmlWithUserName)
-    })
+        fs.readFile(path.join(__dirname, "public", "views", "energy-posts.html"),"utf-8", (err, data) =>{
+            if(err){
+                console.log("Erro ao abrir arquivo HTML: ",err)
+                res.status(500).send("Erro interno do servidor")
     
+                return
+            } 
+            const htmlWithUserName = data.replace(/<%= userName %>/g, userName)
     
-    // res.sendFile(path.join(__dirname, "public", "views", "energy-posts.html"))
-    // res.status(200).json({ message: `Bem-vindo, ${req.user.userName}! Esta é uma rota protegida.` });
+            res.status(200).send(htmlWithUserName)
+        })
+    } catch(error){
+    console.log("Erro ao buscar postagens: " ,error)
+    res.status(500).send("Erro interno do servidor")
+}
 });
+
+app.post("/energy-clean", authMiddleware, async (req,res) =>{
+    const {userName, titulo, conteudo} = req.body
+
+    console.log("Dados recebidos: ", req.body)
+
+    try{
+        await Post.create({
+            userName,
+            titulo,
+            conteudo
+        })
+
+        res.status(201).json({ message: "Postagem criada com sucesso" })
+    } catch(error){
+        console.error("Erro: ", error)
+        res.status(500).json({ error: "Erro ao criar postagem. Por favor, tente novamente" })
+    }
+})
 
 app.listen(port, function () {
     console.log(`Sevido inciando na porta http://localhost:${port}`)

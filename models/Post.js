@@ -2,18 +2,23 @@ const { toDefaultValue } = require("sequelize/lib/utils")
 const db = require("./db")
 
 const Post = db.sequelize.define("Post",{
+    id: {
+        type: db.Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+    },
     userName: {
         type: db.Sequelize.STRING,
         allowNull: false,
-        unique: true,
-        primaryKey: true
+
     },
     titulo: {
         type: db.Sequelize.STRING,
         allowNull: false,
     },
     conteudo: {
-        type: db.Sequelize.STRING,
+        type: db.Sequelize.TEXT,
         allowNull: false
     },
     data: {
@@ -23,6 +28,6 @@ const Post = db.sequelize.define("Post",{
     }
 } )
 
-Post.sync({force:true})
+// Post.sync({force:true})
 
 module.exports =  Post

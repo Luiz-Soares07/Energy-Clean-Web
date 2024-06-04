@@ -11,12 +11,12 @@
 
 
 body{
-    background-color: rgb(151, 197, 162);
+    background-color: rgb(203, 245, 213);
 }
 header{
     width: 100%;
     height: 15vh;
-    background-color: rgb(0, 125, 71);
+    background-color: rgb(28, 129, 86);
     display: flex;
     justify-content: space-between;
 }
@@ -56,7 +56,7 @@ header img{
 #new-post{
     width: 150px;
     height: 40px;
-    background-color: rgb(0, 24, 4);
+    background-color: rgb(1, 100, 18);
     color: rgb(219, 218, 218);
     border: 2px solid transparent;
 }
@@ -145,4 +145,28 @@ header img{
     z-index: 99;
     display: none;
     backdrop-filter: blur(5px);
+}
+
+#userName{
+    display: none;
+}
+
+.postagens{
+    margin: 2rem;
+
+}
+
+.postagem{
+    margin: 2rem;
+    overflow-wrap: break-word;
+}
+
+.postagem h1{
+    font-family: "Quicksand";
+}
+
+.postagem p{
+    overflow-wrap: break-word;
+    text-align: justify;
+    font-family: "Montserrat";
 }
